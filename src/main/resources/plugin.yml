@@ -1,0 +1,7 @@
+name: PlayerCorpses
+version: 1.0.0
+main: io.greitan.avion.PlayerCorpses
+description: PlayerCorpses
+author: Greitan.IO
+api-version: "1.21"
+prefix: PlayerCorpses
