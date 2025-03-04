@@ -63,7 +63,7 @@ shadowJar {
 // Custom task to copy the shadow JAR to a test server
 task copyToTestServer(type: Copy) {
     from shadowJar  // Get the shadow JAR
-    into "D:\\JavaTest\\plugins"  // Define the target directory for the JAR
+    into "C:\\JavaTest\\plugins"  // Define the target directory for the JAR
 }
 
 // Ensure shadowJar task is executed after build

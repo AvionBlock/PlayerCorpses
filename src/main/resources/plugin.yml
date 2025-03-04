@@ -5,3 +5,6 @@ description: PlayerCorpses
 author: Greitan.IO
 api-version: "1.21"
 prefix: PlayerCorpses
+folia-supported: true
+
+depend: [FancyNpcs]
