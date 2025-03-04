@@ -36,7 +36,7 @@ dependencies {
     // FancyNpcs
     compileOnly "de.oliver:FancyNpcs:2.4.2"
     // FoliaLib
-    implementation "com.github.technicallycoded:FoliaLib:main-SNAPSHOT"
+    implementation 'com.github.TechnicallyCoded:FoliaLib:0.4.3'
 
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.36'
