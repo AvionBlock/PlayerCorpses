@@ -17,6 +17,7 @@ public class PlayerCorpses extends JavaPlugin {
         reload();
 
         getServer().getPluginManager().registerEvents(new PlayerDeathListener(locManager), this);
+        getServer().getPluginManager().registerEvents(new NpcInteractListener(locManager), this);
 
         Logger.info(locManager.getMessage("plugin.enabled"));
     }
