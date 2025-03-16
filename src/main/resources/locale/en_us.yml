@@ -1,0 +1,6 @@
+plugin:
+  enabled: "Plugin enabled!"
+  disabled: "Plugin disabled."
+
+corpse:
+  name: "<yellow>{0}'s corpse"

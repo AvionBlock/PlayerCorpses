@@ -9,23 +9,30 @@ import lombok.Getter;
 
 public class PlayerCorpses extends JavaPlugin {
     private static @Getter PlayerCorpses instance;
+    private static @Getter LocaleManager locManager;
 
     @Override
     public void onEnable() {
         instance = this;
+        reload();
 
-        getServer().getPluginManager().registerEvents(new PlayerDeath(), this);
-        this.reload();
-        Logger.info("Plugin enabled!");
+        getServer().getPluginManager().registerEvents(new PlayerDeathListener(locManager), this);
+
+        Logger.info(locManager.getMessage("plugin.enabled"));
     }
 
     @Override
     public void onDisable() {
-        getLogger().info("Plugin disabled!");
+        Logger.info(locManager.getMessage("plugin.disabled"));
     }
 
     public void reload() {
         saveDefaultConfig();
         reloadConfig();
+
+        String locale = getConfig().getString("config.locale", "en_us");
+        locManager = new LocaleManager(this, locale);
+
+        Logger.info("Language set to: " + locale);
     }
 }

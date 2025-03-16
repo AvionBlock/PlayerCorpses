@@ -1,0 +1,6 @@
+plugin:
+  enabled: "Плагин загружен!"
+  disabled: "Плагин выгружен."
+
+corpse:
+  name: "<yellow>Могила {0}"
