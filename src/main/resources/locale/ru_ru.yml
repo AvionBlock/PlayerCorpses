@@ -4,3 +4,13 @@ plugin:
 
 corpse:
   name: "<yellow>Могила {0}"
+  break_error: "<red>Произошла ошибка при разрушении могилы."
+
+menu:
+  title: "<yellow>Выберите действие"
+  button:
+    back: "<red>Назад"
+    break: "<yellow>Сломать могилу"
+  action:
+    back: "<green>>> <white>Вы можете сломать могилу позже!"
+    break: "<green>>> <white>Вы получили все вещи из могилы!"

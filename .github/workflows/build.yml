@@ -1,4 +1,4 @@
-name: Build and Publish
+name: Build and Archive
 
 on:
   push:
@@ -16,7 +16,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          distribution: "temurin"
+          distribution: "zulu"
           java-version: "21"
 
       - name: Make gradlew executable

@@ -55,7 +55,7 @@ java {
 }
 
 shadowJar {
-    archiveClassifier.set('all')
+    archiveClassifier.set('shaded')
     // Relocate package to avoid conflicts
     relocate "com.tcoded.folialib", "io.greitan.avion.lib.folialib"
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE

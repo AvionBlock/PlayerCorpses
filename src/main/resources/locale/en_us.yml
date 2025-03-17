@@ -4,3 +4,13 @@ plugin:
 
 corpse:
   name: "<yellow>{0}'s corpse"
+  break_error: "<red>There was an error when destroying the corpse."
+
+menu:
+  title: "<yellow>Choose action:"
+  button:
+    back: "<red>Back"
+    break: "<yellow>Break corpse"
+  action:
+    back: "<green>>> <white>You can break corpse later!"
+    break: "<green>>> <white>You get all items from corpse!"
