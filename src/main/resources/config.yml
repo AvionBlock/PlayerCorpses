@@ -1,2 +1,2 @@
 config:
-  debug: true
+  locale: "en_us"

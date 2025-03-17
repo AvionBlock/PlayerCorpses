@@ -8,7 +8,7 @@
 
 plugins {
   id 'java'
-  id 'com.gradleup.shadow' version '9.0.0-beta9'
+  id 'com.gradleup.shadow' version '9.0.0-beta10'
 }
 
 group = 'io.greitan'
@@ -34,9 +34,9 @@ dependencies {
     // Paper API
     compileOnly 'io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT'
     // FancyNpcs
-    compileOnly "de.oliver:FancyNpcs:2.4.2"
+    compileOnly "de.oliver:FancyNpcs:2.4.4"
     // FoliaLib
-    implementation 'com.github.TechnicallyCoded:FoliaLib:0.4.3'
+    implementation 'com.github.TechnicallyCoded:FoliaLib:0.4.4'
 
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.36'
@@ -55,15 +55,16 @@ java {
 }
 
 shadowJar {
-    archiveClassifier.set('all')
+    archiveClassifier.set('shaded')
     // Relocate package to avoid conflicts
     relocate "com.tcoded.folialib", "io.greitan.avion.lib.folialib"
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 // Custom task to copy the shadow JAR to a test server
 task copyToTestServer(type: Copy) {
     from shadowJar  // Get the shadow JAR
-    into "D:\\JavaTest\\plugins"  // Define the target directory for the JAR
+    into "C:\\JavaTest\\plugins"  // Define the target directory for the JAR
 }
 
 // Ensure shadowJar task is executed after build

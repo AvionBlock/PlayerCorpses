@@ -9,6 +9,9 @@ on:
       status:
         required: true
         description: "Status (beta, stable)"
+      description:
+        required: false
+        description: "Release description"
 
 env:
   VERSION: ${{ github.event.inputs.tag }}-${{ github.event.inputs.status }}
@@ -24,7 +27,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          distribution: "temurin"
+          distribution: "zulu"
           java-version: "21"
 
       - name: Cache Gradle dependencies
@@ -73,7 +76,8 @@ jobs:
         with:
           prerelease: false
           tag: ${{ github.event.inputs.tag }}
-          artifacts: build/libs/PlayerCorpses-*.jar
+          artifacts: build/libs/PlayerCorpses-*-shaded.jar
+          body: ${{ github.event.inputs.description }}
         env:
           GITHUB_REPOSITORY: AvionBlock/PlayerCorpses
 
@@ -83,6 +87,7 @@ jobs:
         with:
           prerelease: true
           tag: ${{ github.event.inputs.tag }}
-          artifacts: build/libs/PlayerCorpses-*.jar
+          artifacts: build/libs/PlayerCorpses-*-shaded.jar
+          body: ${{ github.event.inputs.description }}
         env:
           GITHUB_REPOSITORY: AvionBlock/PlayerCorpses
