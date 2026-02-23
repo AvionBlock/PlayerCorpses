@@ -1,2 +1,10 @@
 config:
+  # Plugin language (locale) file name from /plugins/PlayerCorpses/locale/
+  # Currently supported: en_us, ru_ru
+  # Example: en_us.yml -> "en_us"
   locale: "en_us"
+
+  # Allow other players (not the corpse owner) to break and loot corpses
+  # true  = anyone can break any corpse
+  # false = only the player who died can break their own corpse
+  allowOthersBreak: false

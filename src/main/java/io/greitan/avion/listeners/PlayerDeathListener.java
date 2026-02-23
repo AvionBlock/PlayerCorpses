@@ -23,8 +23,6 @@ import io.greitan.avion.utils.Logger;
 import io.greitan.avion.utils.YamlBase;
 
 import java.util.UUID;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 
 public class PlayerDeathListener implements Listener {
 
@@ -58,7 +56,7 @@ public class PlayerDeathListener implements Listener {
         YamlConfiguration config = new YamlConfiguration();
         config.set("uuid", corpseUUID);
         config.set("playerName", player.getName());
-        config.set("timeOfDeath", LocalDateTime.now().toEpochSecond(ZoneOffset.ofHours(3)));
+        config.set("timeOfDeath", java.time.Instant.now().getEpochSecond());
 
         // Store inventory if it exists
         if (inventoryContents.length > 0) {
@@ -71,7 +69,8 @@ public class PlayerDeathListener implements Listener {
 
         // Save player death data
         try {
-            YamlBase.savePlayerData(player.getName(), corpseUUID, config);
+            config.set("owner", player.getName());
+            YamlBase.saveCorpseData(corpseUUID, config);
         } catch (IllegalStateException e) {
             Logger.error(e);
         }
@@ -101,6 +100,7 @@ public class PlayerDeathListener implements Listener {
 
         npcData.setDisplayName(localeManager.getMessage("corpse.name", player.getName()));
         npcData.setType(EntityType.PLAYER);
+        npcData.setSkin(player.getUniqueId().toString());
         addNpcAttributes(npcData);
 
         return npcData;

@@ -25,7 +25,6 @@ PlayerCorpses comes with configurable messages and settings to allow you to tail
 - **Locale Configuration**: The plugin supports multiple languages. Locale files can be found in the `locale` folder.
 - **Custom Messages**: The plugin uses the **MiniMessage** format for text formatting. You can find more information on how to format messages in the [MiniMessage documentation](https://docs.advntr.dev/minimessage/format).
 
-  
 ## Commands
 
 Currently, there are no commands provided by this plugin. Interaction is done through the GUI menus generated when interacting with a corpse NPC. However, as the plugin evolves, additional commands may be added in the future, such as reloading the plugin, setting skins for corpse NPCs, and more.
@@ -43,7 +42,17 @@ If you encounter any issues or have questions, feel free to reach out to the plu
 
 ## Changelog
 
+### 1.1.0
+
+- **Corpse Ownership System**: Corpses are now linked to the player who died. Only the owner can break their corpse by default.
+- **Configurable Access**: Added `allowOthersBreak` option in `config.yml` to allow or restrict other players from breaking and looting corpses.
+- **Global Corpse Storage**: Corpse data is now stored globally instead of per-player, fixing errors when other players attempt to interact with a corpse.
+- **Player Skin Support**: Corpse NPCs now automatically use the skin of the player who died.
+- **System-based Time Handling**: Death time is now saved using system UTC timestamp instead of a hardcoded timezone offset.
+- **Improved Stability**: Fixed console errors when non-owners attempted to break a corpse.
+
 ### 1.0.0 - First Release
+
 - Initial release of PlayerCorpses.
 
 ## License
