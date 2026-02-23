@@ -14,71 +14,85 @@ import java.util.Base64;
 import java.util.UUID;
 
 public class YamlBase {
+    private static final File STORE_DIR = new File("./plugins/PlayerCorpses/store");
+    private static final File CORPSES_DIR = new File(STORE_DIR, "corpses");
+
+    // -------------------------------------------------------------------------
+    // NEW: Corpse storage (global, allows any player to access by corpseId)
+    // Path: ./plugins/PlayerCorpses/store/corpses/<corpseId>.yml
+    // -------------------------------------------------------------------------
 
     /**
-     * Saves player data to a YAML file.
-     * 
-     * @param name   The player's name.
-     * @param id     The unique ID of the player.
-     * @param config The configuration to be saved.
+     * Saves corpse data to a YAML file in a global corpses directory.
+     *
+     * @param corpseId The corpse id (usually your generated UUID string).
+     * @param config   The configuration to be saved.
      */
-    public static void savePlayerData(String name, String id, YamlConfiguration config) {
-        File dir = new File("./plugins/PlayerCorpses/store/" + name);
+    public static void saveCorpseData(String corpseId, YamlConfiguration config) {
+        ensureDir(CORPSES_DIR);
+
+        File file = new File(CORPSES_DIR, corpseId + ".yml");
+        saveYaml(file, config);
+    }
+
+    /**
+     * Loads corpse data from a YAML file in the global corpses directory.
+     *
+     * @param corpseId The corpse id.
+     * @return The YamlConfiguration containing the corpse data.
+     */
+    public static YamlConfiguration loadCorpseData(String corpseId) {
+        File file = new File(CORPSES_DIR, corpseId + ".yml");
+        ensureFileExists(file, "Corpse data file does not exist");
+        return YamlConfiguration.loadConfiguration(file);
+    }
+
+    /**
+     * Deletes the corpse data file from the global corpses directory.
+     *
+     * @param corpseId The corpse id.
+     */
+    public static void deleteCorpseData(String corpseId) {
+        File file = new File(CORPSES_DIR, corpseId + ".yml");
+        deleteFileOrThrow(file, "Failed to delete corpse data file");
+    }
+
+    // -------------------------------------------------------------------------
+    // Utils
+    // -------------------------------------------------------------------------
+
+    private static void ensureDir(File dir) {
         if (!dir.exists() && !dir.mkdirs()) {
             throw new IllegalStateException("Failed to create directory: " + dir.getAbsolutePath());
         }
+    }
 
-        File file = new File(dir, id + ".yml");
-
+    private static void saveYaml(File file, YamlConfiguration config) {
         try {
             config.save(file);
         } catch (IOException e) {
-            throw new IllegalStateException("Failed to save player data to file: " + file.getAbsolutePath(), e);
+            throw new IllegalStateException("Failed to save yaml to file: " + file.getAbsolutePath(), e);
         }
     }
 
-    /**
-     * Loads player data from a YAML file.
-     * 
-     * @param name The player's name.
-     * @param id   The unique ID of the player.
-     * @return The YamlConfiguration containing the player data.
-     */
-    public static YamlConfiguration loadPlayerData(String name, String id) {
-        File file = new File("./plugins/PlayerCorpses/store/" + name, id + ".yml");
-
+    private static void ensureFileExists(File file, String msg) {
         if (!file.exists()) {
-            throw new IllegalStateException("Player data file does not exist: " + file.getAbsolutePath());
+            throw new IllegalStateException(msg + ": " + file.getAbsolutePath());
         }
-
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-
-        return config;
     }
 
-    /**
-     * Deletes the player data file.
-     * 
-     * @param name The player's name.
-     * @param id   The unique ID of the player.
-     */
-    public static void deletePlayerData(String name, String id) {
-        File file = new File("./plugins/PlayerCorpses/store/" + name, id + ".yml");
-
-        if (file.exists()) {
-            if (file.delete()) {
-                System.out.println("Player data file deleted: " + file.getAbsolutePath());
-            } else {
-                throw new IllegalStateException("Failed to delete player data file: " + file.getAbsolutePath());
-            }
-        } else {
-            throw new IllegalStateException("Player data file does not exist: " + file.getAbsolutePath());
+    private static void deleteFileOrThrow(File file, String failMsg) {
+        if (!file.exists()) {
+            throw new IllegalStateException("Data file does not exist: " + file.getAbsolutePath());
+        }
+        if (!file.delete()) {
+            throw new IllegalStateException(failMsg + ": " + file.getAbsolutePath());
         }
     }
 
     /**
      * Generates a new UUIDv4 without dashes.
-     * 
+     *
      * @return The generated UUID string.
      */
     public static String generateUUIDv4() {
@@ -87,7 +101,7 @@ public class YamlBase {
 
     /**
      * Converts an array of ItemStacks to a Base64 encoded string.
-     * 
+     *
      * @param items The array of ItemStacks to be serialized.
      * @return The Base64 encoded string representing the items.
      */
@@ -102,7 +116,7 @@ public class YamlBase {
 
     /**
      * Converts a byte array to a Base64 encoded string.
-     * 
+     *
      * @param serialized The byte array to be converted.
      * @return The Base64 encoded string.
      */
@@ -116,7 +130,7 @@ public class YamlBase {
 
     /**
      * Converts a Base64 encoded string to an array of ItemStacks.
-     * 
+     *
      * @param base64 The Base64 encoded string representing the item stacks.
      * @return The deserialized array of ItemStacks.
      */
@@ -131,7 +145,7 @@ public class YamlBase {
 
     /**
      * Converts a Base64 encoded string to a single ItemStack.
-     * 
+     *
      * @param base64 The Base64 encoded string representing the item stack.
      * @return The deserialized ItemStack.
      */

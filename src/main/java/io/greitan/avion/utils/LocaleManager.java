@@ -8,16 +8,13 @@ package io.greitan.avion.utils;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 public class LocaleManager {
     private final JavaPlugin plugin;
@@ -43,13 +40,19 @@ public class LocaleManager {
      */
     private void copyLocaleFiles() {
         File localeDir = new File(plugin.getDataFolder(), "locale");
-        if (!localeDir.exists()) {
-            localeDir.mkdirs();
+        if (!localeDir.exists() && !localeDir.mkdirs()) {
+            Logger.warn("Could not create locale directory: " + localeDir.getPath());
+            return;
         }
 
         try {
+            // Always ensure base english exists
             copyLocaleFile("en_us.yml");
-            copyLocaleFile(locale + ".yml");
+
+            // Try to copy requested locale if it's not en_us
+            if (locale != null && !locale.isBlank() && !"en_us".equalsIgnoreCase(locale)) {
+                copyLocaleFile(locale.toLowerCase() + ".yml");
+            }
         } catch (IOException e) {
             Logger.error("Error when copying the locale files!");
             Logger.error(e);
@@ -64,12 +67,22 @@ public class LocaleManager {
      */
     private void copyLocaleFile(String fileName) throws IOException {
         File localeFile = new File(plugin.getDataFolder(), "locale" + File.separator + fileName);
-        if (!localeFile.exists()) {
-            try (InputStream in = plugin.getResource("locale/" + fileName);
-                    Reader reader = new InputStreamReader(in)) {
-                Files.copy(in, localeFile.toPath());
-                Logger.info("Locale file " + fileName + " copied to " + localeFile.getPath());
+        if (localeFile.exists())
+            return;
+
+        try (InputStream in = plugin.getResource("locale/" + fileName)) {
+            if (in == null) {
+                Logger.warn("Locale file " + fileName + " not found in jar (resources/locale).");
+                return;
             }
+
+            // Ensure parent exists
+            File parent = localeFile.getParentFile();
+            if (parent != null && !parent.exists())
+                parent.mkdirs();
+
+            Files.copy(in, localeFile.toPath());
+            Logger.info("Locale file " + fileName + " copied to " + localeFile.getPath());
         }
     }
 
@@ -77,7 +90,10 @@ public class LocaleManager {
      * Loads the locale from a file based on the specified locale.
      */
     private void loadLocale() {
-        String fileName = locale + ".yml";
+        String fileName = (locale == null || locale.isBlank())
+                ? "en_us.yml"
+                : locale.toLowerCase() + ".yml";
+
         if (!loadLocaleFromFile(fileName)) {
             Logger.warn("Locale file for " + locale + " not found, falling back to English.");
             loadLocaleFromFile("en_us.yml");
@@ -92,18 +108,28 @@ public class LocaleManager {
      */
     private boolean loadLocaleFromFile(String fileName) {
         File localeFile = new File(plugin.getDataFolder(), "locale" + File.separator + fileName);
-        if (localeFile.exists()) {
-            YamlConfiguration config = YamlConfiguration.loadConfiguration(localeFile);
-            for (String key : config.getKeys(true)) {
-                messages.put(key, config.getString(key));
+        if (!localeFile.exists())
+            return false;
+
+        messages.clear();
+
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(localeFile);
+        for (String key : config.getKeys(true)) {
+            if (config.isString(key)) {
+                String value = config.getString(key);
+                if (value != null) {
+                    messages.put(key, value);
+                }
             }
-            return true;
         }
-        return false;
+        return true;
     }
 
     /**
      * Retrieves a localized message and replaces placeholders if provided.
+     *
+     * Placeholders are replaced by index:
+     * {0}, {1}, {2} ... in the message.
      *
      * @param key          The key of the message.
      * @param placeholders Optional placeholders to replace in the message.
@@ -111,11 +137,14 @@ public class LocaleManager {
      */
     public String getMessage(String key, @Nullable String... placeholders) {
         String message = messages.getOrDefault(key, "Message not found.");
+
         if (placeholders != null && placeholders.length > 0) {
             for (int i = 0; i < placeholders.length; i++) {
-                message = message.replace("{" + i + "}", placeholders[i]);
+                String replacement = placeholders[i] == null ? "" : placeholders[i];
+                message = message.replace("{" + i + "}", replacement);
             }
         }
+
         return message;
     }
 }

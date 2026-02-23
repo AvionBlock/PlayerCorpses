@@ -8,7 +8,7 @@
 
 plugins {
   id 'java'
-  id 'com.gradleup.shadow' version '9.0.0-beta10'
+  id 'com.gradleup.shadow' version '9.0.0-beta12'
 }
 
 group = 'io.greitan'
@@ -26,21 +26,25 @@ repositories {
     }
     maven {
         name = "FancyNpcs"
-        url = "https://repo.fancyplugins.de/releases"
+        url = "https://repo.fancyinnovations.com/releases"
+    }
+    maven {
+        name = "tcoded-releases"
+        url = "https://repo.tcoded.com/releases"
     }
 }
 
 dependencies {
     // Paper API
-    compileOnly 'io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT'
+    compileOnly 'io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT'
     // FancyNpcs
-    compileOnly "de.oliver:FancyNpcs:2.4.4"
+    compileOnly "de.oliver:FancyNpcs:2.9.2"
     // FoliaLib
-    implementation 'com.github.TechnicallyCoded:FoliaLib:0.4.4'
+    implementation 'com.tcoded:FoliaLib:0.5.1'
 
     // Lombok
-    compileOnly 'org.projectlombok:lombok:1.18.36'
-    annotationProcessor 'org.projectlombok:lombok:1.18.36'
+    compileOnly 'org.projectlombok:lombok:1.18.42'
+    annotationProcessor 'org.projectlombok:lombok:1.18.42'
 }
 
 tasks.withType(JavaCompile) {

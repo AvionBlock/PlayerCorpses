@@ -122,45 +122,58 @@ public class NpcInteractListener implements Listener {
      */
     private void breakCorpse(Player player, String npcID) {
         Npc npc = FancyNpcsPlugin.get().getNpcManager().getNpcById(npcID);
-        String containerId = npc.getData().getName();
-        YamlConfiguration containerData;
+        if (npc == null)
+            return;
+
+        String corpseId = npc.getData().getName();
+        YamlConfiguration corpseData;
 
         try {
-            containerData = YamlBase.loadPlayerData(player.getName(), containerId);
+            corpseData = YamlBase.loadCorpseData(corpseId);
         } catch (IllegalStateException e) {
             Logger.error(e);
+            player.sendMessage(PlayerCorpses.getMM().deserialize(localeManager.getMessage("corpse.break_error")));
+            return;
+        }
+
+        String owner = corpseData.getString("owner", "");
+        boolean allowOthers = PlayerCorpses.getInstance().getConfig().getBoolean("config.allowOthersBreak", false);
+
+        if (!allowOthers && !player.getName().equalsIgnoreCase(owner)) {
+            player.sendMessage(PlayerCorpses.getMM().deserialize(
+                    localeManager.getMessage("corpse.no_permission", owner)));
             return;
         }
 
         Location dropLocation = npc.getData().getLocation();
 
-        // Remove NPC and handle its drops
         if (new NpcRemoveEvent(npc, Bukkit.getServer().getConsoleSender()).callEvent()) {
             npc.removeForAll();
+
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 if (npc.getIsLookingAtPlayer().getOrDefault(onlinePlayer.getUniqueId(), false)) {
                     npc.getIsLookingAtPlayer().put(onlinePlayer.getUniqueId(), false);
                     new NpcStopLookingEvent(npc, onlinePlayer).callEvent();
                 }
             }
+
             FancyNpcsPlugin.get().getNpcManager().removeNpc(npc);
 
-            // Drop items if any exist
-            if (containerData.contains("inventory")) {
+            if (corpseData.contains("inventory")) {
                 try {
                     ItemStack[] inventoryContents = YamlBase
-                            .itemStackArrayFromBase64(containerData.getString("inventory"));
+                            .itemStackArrayFromBase64(corpseData.getString("inventory"));
                     for (ItemStack item : inventoryContents) {
-                        if (item != null) {
+                        if (item != null)
                             dropLocation.getWorld().dropItemNaturally(dropLocation, item);
-                        }
                     }
                 } catch (IllegalStateException e) {
                     Logger.error(e);
                 }
             }
 
-            YamlBase.deletePlayerData(player.getName(), containerId);
+            YamlBase.deleteCorpseData(corpseId);
+            player.sendMessage(PlayerCorpses.getMM().deserialize(localeManager.getMessage("menu.action.break")));
         } else {
             player.sendMessage(PlayerCorpses.getMM().deserialize(localeManager.getMessage("corpse.break_error")));
         }
